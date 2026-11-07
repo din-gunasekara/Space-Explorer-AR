@@ -138,7 +138,7 @@ Rocket Ship by Daniel Melchior [CC-BY] (https://creativecommons.org/licenses/by/
 
 **Project Name:** Space Explorer AR – Discover the Universe
 
-**Group Number:** [Enter Group Number]
+**Group Number:** 50
 
 **Group Members:**
 
