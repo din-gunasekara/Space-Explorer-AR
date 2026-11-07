@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Space Explorer AR</title>
+
+    <!-- A-Frame -->
+    <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
+
+    <!-- AR.js -->
+    <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@3.4.7/aframe/build/aframe-ar.js"></script>
+
+    <!-- STYLING -->
+    <style>
+
+        body {
+            margin: 0;
+            overflow: hidden;
+            font-family: Arial, sans-serif;
+            background: #000;
+        }
+
+        /* STATUS BANNER */
+
+        #status {
+            position: fixed;
+            top: 12px;
+            left: 3%;
+            width: 94%;
+            padding: 14px 5px;
+            text-align: center;
+            font-size: 16px;
+            font-weight: bold;
+            color: white;
+            background: #a83232;
+            border-radius: 12px;
+            z-index: 9999;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+            transition: background 0.3s ease;
+            box-sizing: border-box;
+        }
+
+    </style>
+
+    <!-- CUSTOM COMPONENTS -->
+
+    <script>
+
+        // EARTH COLOUR CHANGING INTERACTION
+
+        AFRAME.registerComponent('change-color', {
+
+            init: function () {
+
+                const colors = [
+                    '#2878E0',
+                    '#27AE60',
+                    '#E74C3C',
+                    '#9B59B6',
+                    '#F1C40F'
+                ];
+
+                let index = 0;
+
+                this.el.addEventListener('click', () => {
+
+                    index = (index + 1) % colors.length;
+
+                    this.el.setAttribute('color', colors[index]);
+
+                });
+
+            }
+
+        });
+
+
+        // ROCKET GROW AND SHRINK INTERACTION
+
+        AFRAME.registerComponent('grow-on-click', {
+
+            init: function () {
+
+                let grown = false;
+
+                this.el.addEventListener('click', () => {
+
+                    if (!grown) {
+
+                        this.el.setAttribute('scale', '0.8 0.8 0.8');
+
+                    } else {
+
+                        this.el.setAttribute('scale', '0.5 0.5 0.5');
+
+                    }
+
+                    grown = !grown;
+
+                });
+
+            }
+
+        });
+
+    </script>
+
+</head>
+
+
+<body>
+
+    <!-- MARKER STATUS -->
+
+    <div id="status">
+        🔴 SEARCHING FOR SPACE MARKER...
+    </div>
+
+
+    <!-- AR SCENE-->
+
+    <a-scene
+
+        embedded
+
+        arjs="sourceType: webcam; debugUIEnabled: false;"
+
+        renderer="logarithmicDepthBuffer: true; colorManagement: true;"
+
+        vr-mode-ui="enabled: false">
+
+
+        <!-- LOAD 3D MODEL -->
+
+        <a-assets>
+
+            <a-asset-item
+                id="rocketModel"
+                src="assets/rocket.glb">
+            </a-asset-item>
+
+        </a-assets>
+
+
+        <!--HIRO MARKER-->
+
+        <a-marker preset="hiro">
+
+
+            <!-- LIGHTING -->
+
+            <a-entity
+                light="type: ambient; color: #FFFFFF; intensity: 0.7">
+            </a-entity>
+
+            <a-entity
+                light="type: point; color: #FFD27F; intensity: 1.5; distance: 8"
+                position="0 2 0">
+            </a-entity>
+
+
+            <!--SPACE PLATFORM -->
+
+            <a-cylinder
+                position="0 0.03 0"
+                radius="1.8"
+                height="0.08"
+                color="#10152F"
+                material="metalness: 0.6; roughness: 0.3">
+            </a-cylinder>
+
+
+            <!-- PLATFORM DECORATIVE RINGS -->
+
+            <a-torus
+                position="0 0.08 0"
+                rotation="90 0 0"
+                radius="1.72"
+                radius-tubular="0.018"
+                color="#00D9FF">
+            </a-torus>
+
+            <a-torus
+                position="0 0.085 0"
+                rotation="90 0 0"
+                radius="1.58"
+                radius-tubular="0.008"
+                color="#536DFE">
+            </a-torus>
+
+
+            <!-- ORBITAL PATHS -->
+
+            <a-torus
+                position="0 0.75 0"
+                rotation="90 0 0"
+                radius="0.85"
+                radius-tubular="0.005"
+                color="#607D8B"
+                material="transparent: true; opacity: 0.6">
+            </a-torus>
+
+            <a-torus
+                position="0 0.75 0"
+                rotation="90 0 0"
+                radius="1.2"
+                radius-tubular="0.005"
+                color="#607D8B"
+                material="transparent: true; opacity: 0.6">
+            </a-torus>
+
+            <a-torus
+                position="0 0.75 0"
+                rotation="90 0 0"
+                radius="1.5"
+                radius-tubular="0.005"
+                color="#607D8B"
+                material="transparent: true; opacity: 0.6">
+            </a-torus>
+
+
+            <!-- SUN-->
+
+            <a-sphere
+
+                position="0 0.78 0"
+
+                radius="0.27"
+
+                color="#FFB300"
+
+                material="emissive: #FF8C00; emissiveIntensity: 0.9"
+
+                animation="
+                    property: rotation;
+                    to: 0 360 0;
+                    loop: true;
+                    dur: 10000">
+
+            </a-sphere>
+
+
+            <a-text
+                value="SUN"
+                position="0 1.12 0"
+                align="center"
+                color="#FFD54F"
+                width="1.5">
+            </a-text>
+
+
+            <!--EARTH-->
+
+            <a-sphere
+
+                class="clickable"
+
+                position="-0.85 0.65 0"
+
+                radius="0.17"
+
+                color="#2878E0"
+
+                change-color
+
+                animation="
+                    property: rotation;
+                    to: 0 360 0;
+                    loop: true;
+                    dur: 5000">
+
+            </a-sphere>
+
+
+            <a-text
+                value="EARTH"
+                position="-1.05 0.95 0"
+                align="center"
+                color="#64B5F6"
+                width="1.5">
+            </a-text>
+
+
+            <!--MOON-->
+
+            <a-sphere
+
+                position="-1.15 0.48 0.3"
+
+                radius="0.09"
+
+                color="#D9D9D9"
+
+                material="roughness: 0.9"
+
+                animation="
+                    property: rotation;
+                    to: 0 360 0;
+                    loop: true;
+                    dur: 9000">
+
+            </a-sphere>
+
+
+            <a-text
+                value="MOON"
+                position="-1.3 0.72 0.3"
+                align="center"
+                color="#FFFFFF"
+                width="1.2">
+            </a-text>
+
+
+            <!--MARS -->
+
+            <a-sphere
+
+                position="0.85 0.65 0"
+
+                radius="0.16"
+
+                color="#C1440E"
+
+                animation="
+                    property: rotation;
+                    to: 0 360 0;
+                    loop: true;
+                    dur: 6000">
+
+            </a-sphere>
+
+
+            <a-text
+                value="MARS"
+                position="0.85 0.94 0"
+                align="center"
+                color="#FF8A65"
+                width="1.5">
+            </a-text>
+
+
+            <!--JUPITER -->
+
+            <a-sphere
+
+                position="1.25 0.65 0.25"
+
+                radius="0.23"
+
+                color="#C99B73"
+
+                animation="
+                    property: rotation;
+                    to: 0 360 0;
+                    loop: true;
+                    dur: 8000">
+
+            </a-sphere>
+
+
+            <a-text
+                value="JUPITER"
+                position="1.25 1.0 0.25"
+                align="center"
+                color="#FFE0B2"
+                width="1.8">
+            </a-text>
+
+
+            <!--SATURN -->
+
+            <a-sphere
+
+                position="-0.15 0.55 1.05"
+
+                radius="0.19"
+
+                color="#D9B77E"
+
+                animation="
+                    property: rotation;
+                    to: 0 360 0;
+                    loop: true;
+                    dur: 7000">
+
+            </a-sphere>
+
+
+            <!-- SATURN RINGS -->
+
+            <a-torus
+                position="-0.15 0.55 1.05"
+                rotation="75 0 0"
+                radius="0.29"
+                radius-tubular="0.035"
+                color="#C9A66B">
+            </a-torus>
+
+
+            <a-text
+                value="SATURN"
+                position="-0.15 0.88 1.05"
+                align="center"
+                color="#FFE0B2"
+                width="1.5">
+            </a-text>
+
+
+            <!-- SPACE STATION-->
+
+            <a-box
+
+                position="1.35 0.65 -0.45"
+
+                width="0.18"
+
+                height="0.14"
+
+                depth="0.18"
+
+                color="#B0BEC5"
+
+                material="metalness: 0.8; roughness: 0.3"
+
+                animation="
+                    property: rotation;
+                    to: 360 360 0;
+                    loop: true;
+                    dur: 7000">
+
+            </a-box>
+
+
+            <!-- SPACE STATION SOLAR PANELS -->
+
+            <a-box
+                position="1.35 0.65 -0.7"
+                width="0.35"
+                height="0.025"
+                depth="0.12"
+                color="#1565C0">
+            </a-box>
+
+            <a-box
+                position="1.35 0.65 -0.2"
+                width="0.35"
+                height="0.025"
+                depth="0.12"
+                color="#1565C0">
+            </a-box>
+
+
+            <!--ROCKET MODEL-->
+
+            <a-entity
+
+                gltf-model="#rocketModel"
+
+                position="0.55 1.0 0.65"
+
+                scale="0.5 0.5 0.5"
+
+                rotation="0 0 0"
+
+                class="clickable"
+
+                grow-on-click
+
+                animation="
+                    property: position;
+                    from: 0.55 1.0 0.65;
+                    to: 0.55 1.3 0.65;
+                    dir: alternate;
+                    loop: true;
+                    dur: 2200">
+
+            </a-entity>
+
+
+            <a-text
+                value="ROCKET"
+                position="0.55 1.55 0.65"
+                align="center"
+                color="#FFD54F"
+                width="1.5">
+            </a-text>
+
+
+            <!--DECORATIVE STARS -->
+
+            <a-sphere
+                position="-1.4 1.2 -0.5"
+                radius="0.025"
+                color="#FFFFFF">
+            </a-sphere>
+
+            <a-sphere
+                position="1.4 1.35 -0.5"
+                radius="0.03"
+                color="#FFD54F">
+            </a-sphere>
+
+            <a-sphere
+                position="-0.5 1.5 0.8"
+                radius="0.025"
+                color="#00E5FF">
+            </a-sphere>
+
+            <a-sphere
+                position="0.2 1.4 -0.8"
+                radius="0.02"
+                color="#FFFFFF">
+            </a-sphere>
+
+            <a-sphere
+                position="1.3 1.2 0.8"
+                radius="0.025"
+                color="#FFFFFF">
+            </a-sphere>
+
+            <a-sphere
+                position="-1.4 1.2 0.6"
+                radius="0.025"
+                color="#FFD54F">
+            </a-sphere>
+
+            <a-sphere
+                position="0.9 1.6 0.7"
+                radius="0.025"
+                color="#FFFFFF">
+            </a-sphere>
+
+            <a-sphere
+                position="-0.8 1.3 -0.8"
+                radius="0.025"
+                color="#00E5FF">
+            </a-sphere>
+
+
+            <!--PROJECT TITLE -->
+
+            <a-text
+
+                value="SPACE EXPLORER"
+
+                position="-0.8 1.85 0"
+
+                align="center"
+
+                color="#00E5FF"
+
+                width="3.5">
+
+            </a-text>
+
+
+        </a-marker>
+
+
+        <!-- CAMERA AND INTERACTION -->
+
+        <a-entity camera>
+
+            <a-entity
+
+                cursor="rayOrigin: mouse; fuse: false"
+
+                raycaster="objects: .clickable; far: 20"
+
+                position="0 0 -1"
+
+                geometry="
+                    primitive: ring;
+                    radiusInner: 0.01;
+                    radiusOuter: 0.02"
+
+                material="color: white; shader: flat">
+
+            </a-entity>
+
+        </a-entity>
+
+
+    </a-scene>
+
+
+    <!-- MARKER STATUS SCRIPT -->
+
+    <script>
+
+        const marker = document.querySelector('a-marker');
+
+        const status = document.getElementById('status');
+
+
+        // MARKER FOUND
+
+        marker.addEventListener('markerFound', function () {
+
+            status.innerHTML = '🚀 SPACE EXPLORATION ACTIVATED!';
+
+            status.style.background = '#138A50';
+
+        });
+
+
+        // MARKER LOST
+
+        marker.addEventListener('markerLost', function () {
+
+            status.innerHTML = '🔴 MARKER LOST - SEARCHING...';
+
+            status.style.background = '#a83232';
+
+        });
+
+    </script>
+
+
+</body>
+
+</html>
